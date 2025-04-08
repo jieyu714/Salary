@@ -127,7 +127,7 @@ function initializeEventListeners() {
 
             if (table) {
                 table.classList.toggle('show-table');
-                icon.src = table.classList.contains('show-table') ? '../svg/down_triangle.svg' : '../svg/right_triangle.svg';
+                icon.src = table.classList.contains('show-table') ? 'svg/down_triangle.svg' : 'svg/right_triangle.svg';
             }
         }
     });
