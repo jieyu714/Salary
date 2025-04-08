@@ -11,8 +11,8 @@ document.addEventListener('DOMContentLoaded', function() {
 async function initializePage(month) {
     const bigSalaryId = 'big_' + month + '_salary';
     const smallSalaryId = 'small_' + month + '_salary';
-    const txtFilePath = '../data/' + month + '_salary.txt';
-    const htmlFilePath = '../html/' + month + '_salary.html';
+    const txtFilePath = 'data/' + month + '_salary.txt';
+    const htmlFilePath = 'html/' + month + '_salary.html';
 
     try {
         // 1. 加载并嵌入 HTML
