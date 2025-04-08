@@ -1,0 +1,9 @@
+time, Class, Working hours, Hourly wage, Basic salary, Overtime pay, Total salary, Remark 
+February 21, B18, 4, 210, 0, 0, 0, , -
+February 22, ., 0, 210, 0, 0, 0, , -
+February 23, C, 8.5, 210, 0, 0, 0, , -
+February 24, ., 0, 210, 0, 0, 0, , -
+February 25, B18, 4, 210, 0, 0, 0, , -
+February 26, B18, 4, 210, 0, 0, 0, , -
+February 27, ., 0, 210, 0, 0, 0, , -
+February 28, ., 0, 420, 0, 0, 0, 和平紀念日(*2), -
