@@ -57,6 +57,7 @@ function loadDataToTable(id, tableId, txtFilePath) {
     let basicSalaryTotal = 0;
     let overtimePayTotal = 0;
     let totalSalaryTotal = 0;
+    let flag = true;
 
     fetch(txtFilePath)
         .then(response => response.text())
@@ -80,7 +81,19 @@ function loadDataToTable(id, tableId, txtFilePath) {
 
                 // 创建表格行和单元格
                 const tr = document.createElement('tr');
-                tr.innerHTML = `
+                if (columns.length == 9) {
+                    tr.innerHTML = `
+                    <td><b>${columns[0]}</b></td>
+                    <td><b>${columns[1]}</b></td>
+                    <td><b>${workingHours.toFixed(1)}</b></td>
+                    <td><b>${hourlyWage.toFixed(1)}</b></td>
+                    <td><b>${basicSalary.toFixed(1)}</b></td>
+                    <td><b>${overtimePay.toFixed(1)}</b></td>
+                    <td><b>${totalSalary.toFixed(1)}</b></td>
+                    <td><b>${remark}</b></td>
+                `;
+                } else {
+                    tr.innerHTML = `
                     <td>${columns[0]}</td>
                     <td>${columns[1]}</td>
                     <td>${workingHours.toFixed(1)}</td>
@@ -90,6 +103,9 @@ function loadDataToTable(id, tableId, txtFilePath) {
                     <td>${totalSalary.toFixed(1)}</td>
                     <td>${remark}</td>
                 `;
+                    flag = false;
+                }
+                
                 tableBody.appendChild(tr);
 
                 // 更新总计
@@ -101,16 +117,29 @@ function loadDataToTable(id, tableId, txtFilePath) {
 
             // 创建并添加总计行
             const totalRow = document.createElement('tr');
-            totalRow.innerHTML = `
-                <td>${id} Total</td>
-                <td></td>
-                <td>${workingHoursTotal.toFixed(1)}</td>
-                <td></td>
-                <td>${basicSalaryTotal.toFixed(1)}</td>
-                <td>${overtimePayTotal.toFixed(1)}</td>
-                <td>${totalSalaryTotal.toFixed(1)}</td>
-                <td></td>
-            `;
+            if (flag) {
+                totalRow.innerHTML = `
+                    <td><b>${id} Total</b></td>
+                    <td></td>
+                    <td><b>${workingHoursTotal.toFixed(1)}</b></td>
+                    <td></td>
+                    <td><b>${basicSalaryTotal.toFixed(1)}</b></td>
+                    <td><b>${overtimePayTotal.toFixed(1)}</b></td>
+                    <td><b>${totalSalaryTotal.toFixed(1)}</b></td>
+                    <td></td>
+                `;
+            } else {
+                totalRow.innerHTML = `
+                    <td>${id} Total</td>
+                    <td></td>
+                    <td>${workingHoursTotal.toFixed(1)}</td>
+                    <td></td>
+                    <td>${basicSalaryTotal.toFixed(1)}</td>
+                    <td>${overtimePayTotal.toFixed(1)}</td>
+                    <td>${totalSalaryTotal.toFixed(1)}</td>
+                    <td></td>
+                `;
+            }
             tableBody.appendChild(totalRow);
         })
         .catch(error => console.error('加载 TXT 文件错误：', error));
