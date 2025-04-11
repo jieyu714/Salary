@@ -1,6 +1,6 @@
 time, Class, Working hours, Hourly wage, Basic salary, Overtime pay, Total salary, Remark
 March 1, C, 8, 210, 0, 0, 0, 空16.(-0.5), -
-March 2, C, 7.5, 210, 0, 0, 0, 空16.(-0.5)、休21.30(-0.5), -
+March 2, C, 7.5, 210, 0, 0, 0, 空16.(-0.5)、下21.30(-0.5), -
 March 3, B18, 4, 210, 0, 0, 0, , -
 March 4, B18, 4, 210, 0, 0, 0, , -
 March 5, 休, 0, 210, 0, 0, 0, , -
