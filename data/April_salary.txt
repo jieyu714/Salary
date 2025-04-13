@@ -1,0 +1,31 @@
+time, Class, Remark
+April 1, 休, 換店長, -
+April 2, 休, , -
+April 3, C, 清明節補假(*2)、空16(-0.5), -
+April 4, C, 兒童節(*2)、遲1230(-0.5)、空1530 出1730(-0.5), -
+April 5, C, 空16 出1730(X), -
+April 6, C, 空16 出1730(X), -
+April 7, 休, , -
+April 8, 休, , -
+April 9, 休, , -
+April 10, B18, , -
+April 11, B18, 上1730(+0.5), 
+April 12, C, 空16(-0.5), 
+April 13, C, 上1130(+0.5)、空16 出1730(X), -
+April 14, 休, 
+April 15, 休, 
+April 16, 休, 
+April 17, B18, 大掃除
+April 18, B18, 
+April 19, C, 
+April 20, C, 
+April 21, 休, 
+April 22, 休, 
+April 23, 休, 
+April 24, B18, 
+April 25, B18, 
+April 26, C, 
+April 27, C, 
+April 28, 休, 
+April 29, 休, 
+April 30, 休, 
