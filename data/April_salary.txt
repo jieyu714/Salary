@@ -12,10 +12,10 @@ April 10, B18, , -
 April 11, B18, 上1730(+0.5), 
 April 12, C, 空16(-0.5), 
 April 13, C, 上1130(+0.5)、空16 出1730(X), -
-April 14, 休, 
-April 15, 休, 
-April 16, 休, 
-April 17, B18, 大掃除
+April 14, 休, , -
+April 15, 休, , -
+April 16, 休, , -
+April 17, B18, 大掃除, -
 April 18, B18, 
 April 19, C, 
 April 20, C, 
