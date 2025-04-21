@@ -1,6 +1,6 @@
 time, Class, Remark
-March 1, C, 空1600(-0.5), -
-March 2, C, 空1600(-0.5)、休2130(-0.5), -
+March 1, C, 空1600, -
+March 2, C, 空1600、下2130, -
 March 3, B18, , -
 March 4, B18, , -
 March 5, 休, , -
@@ -14,13 +14,13 @@ March 12, 休, , -
 March 13, B18, , -
 March 14, B18, , -
 March 15, C, , -
-March 16, C, 空1600(-0.5), -
+March 16, C, 空1600, -
 March 17, ., , -
 March 18, B18, , -
 March 19, 休, , -
 March 20, B18, 聚餐, -
 March 21, B18, , -
-March 22, C, 空1600(-0.5), -
+March 22, C, 空1600, -
 March 23, C, , -
 March 24, 休, , -
 March 25, 休, , -
