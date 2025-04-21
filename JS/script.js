@@ -42,16 +42,51 @@ async function loadAndEmbedHTML(url, containerId) {
     }
 }
 
-function classToWorkingHours(value) {
-    if (value == "B175") return 4.5;
-    else if (value == "B18") return 4;
-    else if (value == "B185") return 3.5;
-    else if (value == "C") return 8.5;
-    else if (value == "A") return 5;
-    else if (value == "休") return 0;
-    else if (value == ".") return 0;
-    else if (value == "-") return 0;
-    else return -1;
+function classConversion(value, mode) { // 時數、上班、空班、出班、下班
+    const classMap = new Map([
+        ['A', [5, 1200, -1, -1, 1700]],
+        ['B175', [4.5, 1730, -1, -1, 2200]],
+        ['B18', [4, 1800, -1, -1, 2200]],
+        ['B185', [3.5, 1830, -1, -1, 2200]],
+        ['C', [8.5, 1200, 1630, 1800, 2200]]
+    ]);
+    switch(value) {
+        case 'B175':
+        case 'B18':
+        case 'B185':
+        case 'C':
+        case 'A':
+            const classData = classMap.get(value);
+            return classData[mode];
+        case '休':
+        case '.':
+        case '-':
+            return 0;
+        default:
+            return -1;
+    }
+}
+
+function classModification(schedule, hourlyWage, workingHours, remark) {
+    for (let i = 0; i < remark.length; i++) {
+        if (remark[i] == '(' && remark.substring(i, i + 4) == "(*2)") hourlyWage *= 2;
+        else if (['上', '空', '出', '下'].includes(remark[i])) {
+            let mode = 0;
+            if (remark[i] === '上') mode = 1;
+            else if (remark[i] == '空') mode = 2;
+            else if (remark[i] == '出') mode = 3;
+            else if (remark[i] == '下') mode = 4;
+            
+            let timeOne = parseFloat(classConversion(schedule, mode));
+            timeOne = parseInt(timeOne / 100) + 0.5 * !!(timeOne % 100);
+            let timeTwo = parseFloat(remark.substring(i + 1, i + 5));
+            timeTwo = parseInt(timeTwo / 100) + 0.5 * !!(timeTwo % 100);
+
+            if (mode % 2) workingHours += timeOne - timeTwo;
+            else workingHours -= timeOne - timeTwo;
+        }
+    }
+    return [hourlyWage, workingHours];
 }
 
 // 从 TXT 文件加载数据并填充表格
@@ -80,22 +115,11 @@ function loadDataToTable(id, tableId, txtFilePath) {
 
             rows.forEach(row => {
                 const columns = row.split(',');
-                
-                let workingHours = classToWorkingHours(columns[1].trim());
-                let hourlyWage = 210;
                 const remark = columns[2] || '';
                 
-                for (let i = 0; i < remark.length; i++) {
-                    if (remark[i] == '(') {
-                        let str = '';
-                        while (i < remark.length && remark[i] != ')') str += remark[i++];
-                        // document.writeln(columns[0], '|', parseFloat(str.substring(2)), "|||||||||||||||");
-                        if (str[0] == 'X') continue;
-                        else if (str[1] == '*') hourlyWage *= parseFloat(str.substring(2));
-                        else if (str[1] == '+') workingHours += parseFloat(str.substring(2));
-                        else if (str[1] == '-') workingHours -= parseFloat(str.substring(2));
-                    }
-                }
+                let tmp = classModification(columns[1].trim(), 210, classConversion(columns[1].trim(), 0), remark);
+                let hourlyWage = tmp[0];
+                let workingHours = tmp[1];
 
                 // 计算工资
                 const basicSalary = Math.min(workingHours, 8) * hourlyWage;
@@ -183,4 +207,4 @@ function initializeEventListeners() {
             }
         }
     });
-}
+} 
