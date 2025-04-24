@@ -115,7 +115,7 @@ function loadDataToTable(id, tableId, txtFilePath) {
 
             rows.forEach(row => {
                 const columns = row.split(',');
-                const remark = columns[2] || '';
+                let remark = columns[2] || '';
                 
                 let tmp = classModification(columns[1].trim(), 210, classConversion(columns[1].trim(), 0), remark);
                 let hourlyWage = tmp[0];
@@ -125,6 +125,19 @@ function loadDataToTable(id, tableId, txtFilePath) {
                 const basicSalary = Math.min(workingHours, 8) * hourlyWage;
                 const overtimePay = Math.max(workingHours - 8, 0) * hourlyWage + Math.max(workingHours - 8, 0) * (hourlyWage / 3) + Math.max(workingHours - 10, 0) * (hourlyWage / 3);
                 const totalSalary = basicSalary + overtimePay;
+
+                remark = remark.replace(/上(\d{4})/g, function(match, group1) {
+                    return "<span style=\"color:#32CD32\">" + match + "</span>";
+                });
+                remark = remark.replace(/空(\d{4})/g, function(match, group1) {
+                    return "<span style=\"color:#87CEEB\">" + match + "</span>";
+                });
+                remark = remark.replace(/出(\d{4})/g, function(match, group1) {
+                    return "<span style=\"color:#FFA500\">" + match + "</span>";
+                });
+                remark = remark.replace(/下(\d{4})/g, function(match, group1) {
+                    return "<span style=\"color:#FF6347\">" + match + "</span>";
+                });
 
                 // 创建表格行和单元格
                 const tr = document.createElement('tr');
