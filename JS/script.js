@@ -45,15 +45,15 @@ async function loadAndEmbedHTML(url, containerId) {
 function classConversion(value, mode) { // 時數、上班、空班、出班、下班
     const classMap = new Map([
         ['A', [5, 1200, -1, -1, 1700]],
-        ['B175', [4.5, 1730, -1, -1, 2200]],
+        ['B173', [4.5, 1730, -1, -1, 2200]],
         ['B18', [4, 1800, -1, -1, 2200]],
-        ['B185', [3.5, 1830, -1, -1, 2200]],
+        ['B183', [3.5, 1830, -1, -1, 2200]],
         ['C', [8.5, 1200, 1630, 1800, 2200]]
     ]);
     switch(value) {
-        case 'B175':
+        case 'B173':
         case 'B18':
-        case 'B185':
+        case 'B183':
         case 'C':
         case 'A':
             const classData = classMap.get(value);
