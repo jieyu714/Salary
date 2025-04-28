@@ -9,7 +9,7 @@ May 7, 休,
 May 8, B173, 
 May 9, B173, 
 May 10, C, 
-May 11, C, 下2130
+May 11, B17, 下2130
 May 12, B173, 
 May 13, 休, 
 May 14, 休, 
