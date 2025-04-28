@@ -15,7 +15,7 @@ April 13, C, 上1130、空1600、出1730, -
 April 14, 休, , -
 April 15, 休, , -
 April 16, 休, , -
-April 17, B18, 大掃除, -
+April 17, B18, , -
 April 18, B18, 下2230, -
 April 19, C, 上1100、空1500、出1700, -
 April 20, C, 上1100、空1500、出1700、下2130, -
@@ -23,9 +23,9 @@ April 21, 休, , -
 April 22, 休, , -
 April 23, 休, , -
 April 24, B18, , -
-April 25, B18, 
-April 26, C, 
-April 27, C, 
-April 28, 休, 
-April 29, 休, 
-April 30, 休, 
+April 25, B18, , -
+April 26, C, , 上1100、空1500、出1700, -
+April 27, C, , 大掃除、上1100、空1500、出1700, -
+April 28, 休, , -
+April 29, 休, , -
+April 30, 休, , -
