@@ -1,7 +1,7 @@
 time, Class, Remark
 May 1, B173, 勞動節(*2), -
 May 2, B173, , -
-May 3, C,
+May 3, C, 上1100、空1430、出1700, -
 May 4, C, 下2130
 May 5, ., 
 May 6, 休, 
