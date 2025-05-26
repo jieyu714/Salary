@@ -41,20 +41,30 @@ function hideLoading() {
 function handleButtonClick(event) {
     const target = event.target;
 
-    if (target.classList.contains("year") || target.classList.contains("month")) {
-        if (target.classList.contains("year")) {
-            if (lastYear !== null) {
-                lastYear.classList.remove("clicked");
-            }
-            target.classList.add("clicked");
-            lastYear = target;
-        } else {
-            if (lastMonth !== null) {
-                lastMonth.classList.remove("clicked");
-            }
-            target.classList.add("clicked");
-            lastMonth = target;
+    if (target.classList.contains("year")) {
+        if (lastYear !== null) {
+            lastYear.classList.remove("clicked");
         }
+        target.classList.add("clicked");
+        lastYear = target;
+        
+        lastMonth = null;  
+        const monthButtons = document.querySelectorAll('#selection_month button');
+        monthButtons.forEach(button => {
+            button.disabled = false;
+            button.classList.remove("clicked");
+        });
+
+        clearTableData();
+
+    } else if (target.classList.contains("month")) {
+        if (lastYear === null) return;
+
+        if (lastMonth !== null) {
+            lastMonth.classList.remove("clicked");
+        }
+        target.classList.add("clicked");
+        lastMonth = target;
     }
 
     if (lastYear != null && lastMonth != null) {
@@ -274,8 +284,22 @@ function displayTimePoints(timePoints) {
     });
 }
 
+function clearTableData() {
+    const dataTable = document.getElementById("show");
+    const tableHead = dataTable.querySelector("thead");
+    const tableBody = dataTable.querySelector("tbody");
+    tableHead.innerHTML = '';
+    tableBody.innerHTML = '';
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     importData();
+
+    const monthButtons = document.querySelectorAll('#selection_month button');
+    monthButtons.forEach(button => {
+        button.disabled = true;
+    });
+
     document.getElementById("selection_year").addEventListener("click", handleButtonClick);
     document.getElementById("selection_month").addEventListener("click", handleButtonClick);
 });
