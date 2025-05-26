@@ -17,7 +17,7 @@
 }
 
 #selection_year button:not(.clicked),
-#selection_month button:not(.clicked) {
+#selection_month button:not(.clicked){
   text-align: center;
   font-size: 14px;
   padding: 10px;
@@ -27,12 +27,18 @@
   background-color: #ccc;
 }
 
-#selection_year button {
+#selection_year button{
   flex: 0 0 calc(100% / 8 - 10px);
 }
 
 #selection_month button {
   flex: 0 0 calc(100% / 13 - 10px);
+}
+
+#selection_year button:not(.clicked):hover,
+#selection_month button:not(.clicked):hover,
+#reload_data:hover {
+  background-color: #bbb;
 }
 
 table {
@@ -43,6 +49,7 @@ table {
   margin-left: 20px;
   margin-top: 30px;
   border-radius: 5px;
+  table-layout: fixed;
 }
 
 thead {
@@ -55,10 +62,26 @@ td {
   padding: 8px;
   text-align: left;
   box-sizing: border-box;
-  border-radius: 3px; 
+  border-radius: 3px;
   text-align: center;
 }
 
 th {
   background-color: #f2f2f2;
+}
+
+#reload_data {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 8px 16px;
+    background-color: #ccc;
+    border: 1px solid rgb(169, 169, 169);
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
 }
