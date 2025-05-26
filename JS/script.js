@@ -47,8 +47,8 @@ function handleButtonClick(event) {
         }
         target.classList.add("clicked");
         lastYear = target;
-        
-        lastMonth = null;  
+
+        lastMonth = null;
         const monthButtons = document.querySelectorAll('#selection_month button');
         monthButtons.forEach(button => {
             button.disabled = false;
@@ -74,6 +74,12 @@ function handleButtonClick(event) {
 
 async function importData() {
     showLoading();
+
+    // Clear existing data
+    yearlyData.clear();
+    monthlyData.clear();
+    dailyTimePoint.clear();
+
 
     try {
         for (let yearIdx = 0; yearIdx < years.length; yearIdx++) {
@@ -152,6 +158,11 @@ async function importData() {
             }
             yearlyData.get(years[yearIdx]).set("total", [yearlyTotalWorkingHours, yearlyTotalBasicSalary, yearlyTotalOvertimePay, yearlyTotalTotalSalary, yearlyFlag]);
         }
+
+        if(lastYear != null && lastMonth != null){
+            showData();
+        }
+
     } catch (error) {
         console.error("Error during data import:", error);
     } finally {
@@ -247,22 +258,22 @@ async function handleWorkingHoursClick(event) {
 
     const timePoints = dailyTimePoint.get(`${year}${month.toLowerCase()}${day}`);
 
-    displayTimePoints(timePoints);
+    displayTimePoints(month, day, timePoints);
 }
 
-function displayTimePoints(timePoints) {
+function displayTimePoints(month, day, timePoints) {
     if (!timePoints) {
         Swal.fire({
             icon: 'error',
             title: '錯誤',
-            text: '未找到今日資料',
+            text: `未找到${month} ${day}的資料`,
         });
         return;
     }
 
     let popupContent;
     if (timePoints[0] == -1 && timePoints[3] == -1) {
-        popupContent = '<p>今日未上班</p>'
+        popupContent = `<p>未上班</p>`
     } else if (timePoints[1] == -1 && timePoints[2] == -1) {
         popupContent = `
         <p><b>上:</b> ${timePoints[0] || 'N/A'}</p>
@@ -278,7 +289,7 @@ function displayTimePoints(timePoints) {
     }
 
     Swal.fire({
-        title: '上班時間表',
+        title: `${month} ${day}上班時間表`,
         html: popupContent,
         confirmButtonText: '確認'
     });
@@ -302,4 +313,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById("selection_year").addEventListener("click", handleButtonClick);
     document.getElementById("selection_month").addEventListener("click", handleButtonClick);
+
+    document.getElementById("reload_data").addEventListener("click", importData);
 });
