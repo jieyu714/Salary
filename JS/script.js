@@ -128,9 +128,11 @@ async function importData() {
             let monthlyTotalTotalSalary = 0.0;
 
             const { data, error } = await supabase
-                .from(`salary${m[0]}${m[1].toLowerCase()}`)
+                .from(`salaryTable`)
                 .select('*')
-                .order('dateNumber', { ascending: true });
+                .eq('year', m[0])
+                .eq('month', m[1])
+                .order('id', { ascending: true });
 
             if (error) {
                 console.error('資料獲取錯誤:', error);
@@ -146,7 +148,7 @@ async function importData() {
 
                     const line = data[d];
 
-                    const time = line.dateNumber;
+                    const time = line.day;
                     const classValue = line.class;
                     const hourlyWage = line.hourlyWage;
                     const workingHours = line.workingHours;
@@ -155,11 +157,12 @@ async function importData() {
                     const totalSalary = line.totalSalary;
                     const remark = line.remark;
                     const verify = line.verify;
-                    const timePointOne = line.timePointOne;
-                    const timePointTwo = line.timePointTwo;
-                    const timePointThree = line.timePointThree;
-                    const timePointFour = line.timePointFour;
-                    const holiday = line.publicHoliday;
+                    const startShift = line.startShift;
+                    const offDuty = line.offDuty;
+                    const secondShift = line.secondShift;
+                    const endShift = line.endShift;
+                    const holiday = line.isWeekend;
+                    const publicHoliday = line.isPublicHoliday;
 
                     monthlyTotalWorkingHours += workingHours;
                     monthlyTotalBasicSalary += basicSalary;
@@ -167,8 +170,8 @@ async function importData() {
                     monthlyTotalTotalSalary += totalSalary;
                     monthlyFlag &= verify;
 
-                    monthlyData.get(`${m[0]}_${m[1]}`).set(time, [classValue, workingHours, hourlyWage, basicSalary, overtimePay, totalSalary, remark, verify, holiday]);
-                    dailyTimePoint.set(`${m[0]}${m[1]}${time}`, [timePointOne, timePointTwo, timePointThree, timePointFour]);
+                    monthlyData.get(`${m[0]}_${m[1]}`).set(time, [classValue, workingHours, hourlyWage, basicSalary, overtimePay, totalSalary, remark, verify, holiday, publicHoliday]);
+                    dailyTimePoint.set(`${m[0]}${m[1]}${time}`, [startShift, offDuty, secondShift, endShift]);
                 }
             }
 
@@ -203,7 +206,7 @@ async function showData() {
     let htmlContent = '';
 
     if (lastMonth.textContent == "Annual") {
-        const showKey = lastYear.textContent;
+        const showKey = parseInt(lastYear.textContent);
         if (!yearlyData.has(showKey)) {
             tableHead.innerHTML = '';
             tableBody.innerHTML = "<div>找不到該年份的資料</div>";
@@ -254,7 +257,7 @@ async function showData() {
                         <td>${isBold}${value[3]}${boldEnd}</td>
                         <td>${isBold}${value[4]}${boldEnd}</td>
                         <td>${isBold}${value[5]}${boldEnd}</td>
-                        <td>${isBold}${value[6]}${boldEnd}</td>
+                        <td ${value[0] == 'total' ? '' : "class=\"clickable-remark\" "}data-day="${key}" style="cursor: pointer;">${isBold}${value[6]}${boldEnd}</td>
                     </tr>\n`;
 
             htmlContent += tmp;
@@ -272,6 +275,114 @@ async function showData() {
     clickableTime.forEach(cell => {
         cell.addEventListener('click', handleTimeClick);
     });
+
+    const clickableRemark = document.querySelectorAll('.clickable-remark');
+    clickableRemark.forEach(cell => {
+        cell.addEventListener('click', handleRemarkClick);
+    });
+}
+
+async function handleRemarkClick(event) {
+    let day;
+    const target = event.target;
+
+    if (target.tagName === 'B') {
+        day = target.parentNode.dataset.day;
+    } else {
+        day = target.dataset.day;
+    }
+
+    const year = lastYear.textContent;
+    const month = lastMonth.textContent;
+    const verify = monthlyData.get(`${year}_${month}`).get(parseInt(day))[7];
+
+    const result = await Swal.fire({
+        title: `${month} ${day} 備註、確認狀態修改`,
+        html: `
+            <label style="text-align: left;">備註：
+            <input type="text" id="swal-note" class="swal2-input" value="${target.textContent}">
+            </label>
+            <br>
+            <label style="text-align: le;">確認狀態：
+            <input type="text" id="swal-input-verify" class="swal2-input" style="text-align: center; width: 10ch;" value=${verify ? '已確認' : '尚未確認'} readonly>
+            </label>
+        `,
+        showCancelButton: true,
+        confirmButtonText: '確認',
+        cancelButtonText: '取消',
+        didOpen: () => {
+            const verifyInput = document.getElementById('swal-input-verify');
+
+            verifyInput.addEventListener('mousedown', (event) => {
+                event.preventDefault();
+                verifyInput.value = verifyInput.value === '已確認' ? '尚未確認' : '已確認';
+            });
+        },
+        preConfirm: () => {
+            const checked = (document.getElementById('swal-input-verify').value == '已確認');
+            const note = document.getElementById('swal-note').value;
+            return { checked , note };
+        }
+    })
+
+    if (!result.confirmed) {
+        return
+    }
+
+    try {
+        const {checked, note} = result.value || {}
+        if (checked != verify || note != target.textContent) {
+            const { error1 } = await supabase
+                .from('salaryInsertInformation')
+                .insert([{
+                    timeInformation: getNowTimeInformation(),
+                    user_uuid: userUUID,
+                    targetDate: `${year} ${month} ${day}`,
+                    originalVerify: verify,
+                    originalRemark: target.textContent,
+                    changeVerify: checked,
+                    changeRemark: note
+                }]);
+
+            if (error1) {
+                console.error('Error inserting data into salaryInsertInformation:', error1);
+                Swal.fire({
+                    icon: 'error',
+                    title: '錯誤',
+                    text: '插入薪資變更記錄失敗！',
+                });
+                return;
+            }
+
+            const { error: error2 } = await supabase
+            .from(`salaryTable`)
+            .update({verify: checked, remark: note})
+            .eq('year', year)
+            .eq('month', month)
+            .eq('day', parseInt(day))
+
+            if (error2) {
+                console.error('Error updating data in salary table:', error2);
+                Swal.fire({
+                    icon: 'error',
+                    title: '錯誤',
+                    text: '更新備註、確認狀態失敗！',
+                });
+                return;
+            } else {
+                console.log(`${year} ${month} ${day} 的確認狀態已改變為 "${checked ? '已確認' : '尚未確認'}，備註更改為：${note}"`)
+                importData()
+            }
+        }
+    } catch (error) {
+        console.error('An unexpected error occurred:', error);
+        Swal.fire({
+            icon: 'error',
+            title: '錯誤',
+            text: '發生未預期的錯誤！',
+        });
+        return;
+    }
 }
 
 async function handleWorkingHoursClick(event) {
@@ -326,7 +437,7 @@ function displayTimePoints(month, day, timePoints) {
     });
 }
 
-function getWorkingHours(t1, t2, t3, t4) {
+function getWorkingHours(t1, t2, t3, t4, holiday) {
     const ti1 = Math.floor(t1 / 100) + 0.5 * !!(t1 % 100)
     const ti2 = Math.floor(t2 / 100) + 0.5 * !!(t2 % 100)
     const ti3 = Math.floor(t3 / 100) + 0.5 * !!(t3 % 100)
@@ -334,9 +445,9 @@ function getWorkingHours(t1, t2, t3, t4) {
     if (t1 == -1) {
         return 0
     } else if (t2 == -1) {
-        return ti4 - ti1
+        return ti4 - ti1 + 0.5 * holiday
     } else {
-        return (ti4 - ti3) + (ti2 - ti1)
+        return (ti4 - ti3) + (ti2 - ti1) + 0.5 * holiday
     }
 }
 
@@ -419,15 +530,15 @@ async function handleTimeClick(event) {
                 user_uuid: userUUID,
                 targetDate: `${year} ${month} ${day}`,
                 originalClass: data[0],
-                originalTimePointOne: timePoints[0],
-                originalTimePointTwo: timePoints[1],
-                originalTimePointThree: timePoints[2],
-                originalTimePointFour: timePoints[3],
+                originalStartShift: timePoints[0],
+                originalOffDuty: timePoints[1],
+                originalSecondShift: timePoints[2],
+                originalEndShift: timePoints[3],
                 changeClass: formValues.classValue,
-                changeTimePointOne: formValues.tp1,
-                changeTimePointTwo: formValues.tp2,
-                changeTimePointThree: formValues.tp3,
-                changeTimePointFour: formValues.tp4,
+                changeStartShift: formValues.tp1,
+                changeOffDuty: formValues.tp2,
+                changeSecondShift: formValues.tp3,
+                changeEndShift: formValues.tp4,
             }]);
 
         if (error1) {
@@ -439,20 +550,20 @@ async function handleTimeClick(event) {
             });
             return;
         }
-
-        const workingHours = getWorkingHours(parseInt(formValues.tp1), parseInt(formValues.tp2), parseInt(formValues.tp3), parseInt(formValues.tp4))
         const holiday = monthlyData.get(`${year}_${month}`).get(parseInt(day))[8]
+        const publicHoliday = monthlyData.get(`${year}_${month}`).get(parseInt(day))[9] 
+        const workingHours = getWorkingHours(parseInt(formValues.tp1), parseInt(formValues.tp2), parseInt(formValues.tp3), parseInt(formValues.tp4), holiday)
         const hourlyWage = monthlyData.get(`${year}_${month}`).get(parseInt(day))[2]
-        const basicSalary = getBasicSalary(hourlyWage, workingHours, holiday)
-        const overtimePay = getOvertimePay(hourlyWage, workingHours, holiday)
+        const basicSalary = getBasicSalary(hourlyWage, workingHours, publicHoliday)
+        const overtimePay = getOvertimePay(hourlyWage, workingHours, publicHoliday)
         const totalSalary = basicSalary + overtimePay
 
         const updateData = {
             class: formValues.classValue,
-            "timePointOne": parseInt(formValues.tp1),
-            "timePointTwo": parseInt(formValues.tp2),
-            "timePointThree": parseInt(formValues.tp3),
-            "timePointFour": parseInt(formValues.tp4),
+            "startShift": parseInt(formValues.tp1),
+            "offDuty": parseInt(formValues.tp2),
+            "secondShift": parseInt(formValues.tp3),
+            "endShift": parseInt(formValues.tp4),
             "workingHours": workingHours,
             "basicSalary": basicSalary,
             "overtimePay": overtimePay,
@@ -460,9 +571,11 @@ async function handleTimeClick(event) {
         };
 
         const { error: error2 } = await supabase
-            .from(`salary${year}${month.toLowerCase()}`)
+            .from(`salaryTable`)
             .update(updateData)
-            .eq('dateNumber', day);
+            .eq('year', year)
+            .eq('month', month)
+            .eq('day', day)
 
         if (error2) {
             console.error('Error updating data in salary table:', error2);
