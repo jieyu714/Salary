@@ -325,7 +325,7 @@ async function handleRemarkClick(event) {
         }
     })
 
-    if (!result.confirmed) {
+    if (!result.isConfirmed) {
         return
     }
 
