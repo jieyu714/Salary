@@ -63,7 +63,7 @@ function handleButtonClick(event) {
         clearTableData();
 
     } else if (target.classList.contains("month")) {
-        if (lastYear === null) return;
+        if (lastYear == null) return;
 
         if (lastMonth !== null) {
             lastMonth.classList.remove("clicked");
